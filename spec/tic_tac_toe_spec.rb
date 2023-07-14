@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 RSpec.describe TicTacToe do
-  # it "has a version number" do
-  #   expect(TicTacToe::VERSION).not_to be nil
-  # end
+  it "has a version number" do
+    expect(TicTacToe::VERSION).not_to be nil
+  end
 
   context "place_symbol" do
     let(:board) { TicTacToe::Board.new }
@@ -51,15 +51,15 @@ RSpec.describe TicTacToe do
     end
 
     it "returns the first row" do
-      expect(board.row(0)).to eq([1, 2, 3])
+      expect(board.send(:row, 0)).to eq([1, 2, 3])
     end
 
     it "returns the second row" do
-      expect(board.row(1)).to eq([4, 5, 6])
+      expect(board.send(:row, 1)).to eq([4, 5, 6])
     end
 
     it "returns the third row" do
-      expect(board.row(2)).to eq([7, 8, 9])
+      expect(board.send(:row, 2)).to eq([7, 8, 9])
     end
   end
 
@@ -71,15 +71,15 @@ RSpec.describe TicTacToe do
     end
 
     it "returns the first column" do
-      expect(board.column(0)).to eq([1, 4, 7])
+      expect(board.send(:column, 0)).to eq([1, 4, 7])
     end
 
     it "returns the second column" do
-      expect(board.column(1)).to eq([2, 5, 8])
+      expect(board.send(:column, 1)).to eq([2, 5, 8])
     end
 
     it "returns the third column" do
-      expect(board.column(2)).to eq([3, 6, 9])
+      expect(board.send(:column, 2)).to eq([3, 6, 9])
     end
   end
 
@@ -88,7 +88,7 @@ RSpec.describe TicTacToe do
       board = TicTacToe::Board.new
       1.upto(9).each { |i| board.place_symbol(i, i) }
 
-      expect(board.first_diagonal).to eq([1, 5, 9])
+      expect(board.send(:first_diagonal)).to eq([1, 5, 9])
     end
   end
 
@@ -97,7 +97,7 @@ RSpec.describe TicTacToe do
       board = TicTacToe::Board.new
       1.upto(9).each { |i| board.place_symbol(i, i) }
 
-      expect(board.second_diagonal).to eq([3, 5, 7])
+      expect(board.send(:second_diagonal)).to eq([3, 5, 7])
     end
   end
 
