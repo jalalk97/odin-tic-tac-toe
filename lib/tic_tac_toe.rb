@@ -3,7 +3,8 @@
 require_relative "tic_tac_toe/version"
 
 module TicTacToe
-  # TODO: top-level documenation comment
+  # Represents a Tic Tac Toe board. It is possible to place a symbol on the board, check if a move is legal, check for a
+  #   win and reset the board
   class Board
     attr_reader :size, :board
 
@@ -18,22 +19,6 @@ module TicTacToe
 
     def place_symbol(pos, symbol)
       board[pos - 1] = symbol if legal?(pos)
-    end
-
-    def row(row_idx)
-      board.values_at(*(size * row_idx).upto(size * (row_idx + 1) - 1))
-    end
-
-    def column(column_idx)
-      board.values_at(*column_idx.step(by: size, to: size**2 - 1))
-    end
-
-    def first_diagonal
-      board.values_at(*0.step(by: size + 1, to: size**2 - 1))
-    end
-
-    def second_diagonal
-      board.values_at(*(size - 1).step(by: size - 1, to: size * (size - 1)))
     end
 
     def win?(symbol)
@@ -58,6 +43,22 @@ module TicTacToe
 
     private
 
+    def row(row_idx)
+      board.values_at(*(size * row_idx).upto(size * (row_idx + 1) - 1))
+    end
+
+    def column(column_idx)
+      board.values_at(*column_idx.step(by: size, to: size**2 - 1))
+    end
+
+    def first_diagonal
+      board.values_at(*0.step(by: size + 1, to: size**2 - 1))
+    end
+
+    def second_diagonal
+      board.values_at(*(size - 1).step(by: size - 1, to: size * (size - 1)))
+    end
+
     def format_row(row_idx)
       formatted_content = row(row_idx).map.with_index do |symbol, col_idx|
         (symbol || 3 * row_idx + col_idx + 1).to_s.center(3)
@@ -66,7 +67,7 @@ module TicTacToe
     end
   end
 
-  # TODO: top-level documenation comment
+  # Represents a Tic Tac Toe player. A Player has a name and a chosen symbol that is used to when making moves a Board
   class Player
     attr_reader :name, :symbol
 
@@ -76,7 +77,7 @@ module TicTacToe
     end
   end
 
-  # TODO: top-level documenation comment
+  # Encapsulates the state of a game of Tic Tac Toe and acts as an abstraction layer over an instance of Board
   class GameState
     attr_reader :board, :turn, :players
 
@@ -113,7 +114,7 @@ module TicTacToe
     end
   end
 
-  # TODO: top-level documenation comment
+  # Allows two players to play one or more games of Tic Tac Toe
   class Game
     attr_reader :players, :game_state
 
@@ -126,55 +127,56 @@ module TicTacToe
       game_state.reset
       play_turn until game_state.game_over?
 
-      system "clear" or system "cls"
-      puts
-      puts game_state.board
-      winner = game_state.winner
-      puts "#{winner ? "#{winner.name} won!" : "It's a draw!"}, Play again? [Y/n]"
+      display_winner
 
-      answer = gets.chomp.downcase until ["y", "n", ""].include?(answer)
+      puts "Play again? [Y/n]"
+      answer = $stdin.gets.chomp.downcase until ["y", "n", ""].include?(answer)
       play unless answer == "n"
     end
 
     private
 
+    def create_player(player_number)
+      clear_screen
+      puts "Player #{player_number}, what's you name?"
+      name = $stdin.gets.chomp.capitalize
+
+      default_symbol = player_number == 1 ? :X : :O
+      puts "Choose your token: (press enter for default: #{default_symbol})"
+      answer = $stdin.gets.chomp
+      symbol = answer == "" ? default_symbol : answer
+
+      Player.new(name, symbol)
+    end
+
     def prompt_move(header = "\n")
       puts header
       puts game_state.board
       puts "#{game_state.current_player.name}, make a move (1 - 9)"
-      gets.chomp.to_i
+      $stdin.gets.chomp.to_i
     end
 
     def play_turn
-      system "clear" or system "cls"
+      clear_screen
       move = prompt_move
       until game_state.legal_move?(move)
-        system "clear" or system "cls"
+        clear_screen
         move = prompt_move("This move is illegal.")
       end
 
       game_state.make_move(move)
     end
 
-    def create_player(player_number)
-      system "clear" or system "cls"
+    def clear_screen
+      system("clear") or system("cls")
+    end
 
-      puts "Player #{player_number}, what's you name?"
-      name = gets.chomp.capitalize
-
-      default_symbol = player_number == 1 ? :X : :O
-      puts "Choose your token: (press enter for default: #{default_symbol})"
-      answer = gets.chomp
-      symbol = answer == "" ? default_symbol : answer
-
-      Player.new(name, symbol)
+    def display_winner
+      clear_screen
+      puts
+      puts game_state.board
+      winner = game_state.winner
+      print "#{winner ? "#{winner.name} won!" : "It's a draw!"} "
     end
   end
 end
-
-def main
-  game = TicTacToe::Game.new
-  game.play
-end
-
-main
